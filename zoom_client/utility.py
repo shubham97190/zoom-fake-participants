@@ -16,12 +16,22 @@ options = ChromiumOptions()
 options.add_argument('--headless')
 options.add_argument("use-fake-ui-for-media-stream")
 options.add_argument("--use-fake-device-for-media-stream")
+options.add_argument("--no-sandbox")
+options.add_argument("--disable-setuid-sandbox")
+
+options.add_argument("--remote-debugging-port=9222")  # this
+
+options.add_argument("--disable-dev-shm-using")
+options.add_argument("--disable-extensions")
+options.add_argument("--disable-gpu")
+options.add_argument("start-maximized")
+options.add_argument("disable-infobars")
 desired_cap = {
-    'chromeOptions': {
+    'options': {
         'args': ["--use-fake-device-for-media-stream", "--use-fake-ui-for-media-stream"]
     }
 }
-ser = ChromiumService('chromedriver.exe', start_error_message="HELL")
+# ser = ChromiumService('chromedriver.exe', start_error_message="HELL")
 
 ROLE = 0
 CHINA = 0
@@ -67,12 +77,12 @@ def _combine_to_string(data: dict) -> str:
 
 def get_browser(url, meeting_id):
 
-    browser = webdriver.Chrome(
-        executable_path='chromedriver.exe', service=ser, options=options, desired_capabilities=desired_cap)
+    browser = webdriver.Chrome(chrome_options=options)
     browser.get(url)
     start_new_thread(click_button, (browser,))
     if meeting_id in STORE_BROWSER_DICT:
-        STORE_BROWSER_DICT[meeting_id] = STORE_BROWSER_DICT[meeting_id].append(browser)
+        brow = STORE_BROWSER_DICT[meeting_id]
+        STORE_BROWSER_DICT[meeting_id] = brow +[browser]
     else:
         STORE_BROWSER_DICT[meeting_id] = [browser]
     return browser
@@ -99,10 +109,10 @@ def remove_meeting(meeting_code):
     if meeting_code in STORE_BROWSER_DICT:
         for meeting_browser in STORE_BROWSER_DICT[meeting_code]:
             try:
-                meeting_browser.quit()
+                meeting_browser.close()
             except Exception as ex:
                 print(ex)
-        del STORE_BROWSER_DICT[meeting_code]
+        if meeting_code in STORE_BROWSER_DICT:del STORE_BROWSER_DICT[meeting_code]
 
 
 
