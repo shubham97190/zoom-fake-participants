@@ -5,6 +5,7 @@ import datetime
 import random
 from _thread import start_new_thread
 import pandas as pd
+import subprocess
 from selenium import webdriver
 from selenium.webdriver.chromium.options import ChromiumOptions
 from selenium.webdriver.chromium.service import ChromiumService
@@ -39,7 +40,7 @@ LANG = 'en-US'
 SDK_KEY = settings.CLIENT_ID
 API_SECRET = settings.CLIENT_SECRET
 STORE_BROWSER_DICT = dict()
-
+MEETING_URL = 'http://101.53.148.83:9999/meeting.html'
 def click_button(browser):
     try:
         time.sleep(5)
@@ -89,7 +90,8 @@ def get_browser(url, meeting_id):
 
 
 def add_participants(meeting_code, meeting_password, no_of_participants):
-    signature = generate_sdk_signature(meeting_code)    
+    signature = generate_sdk_signature(meeting_code) 
+    url_link_list = []   
     for name in random.sample(df['name'].tolist(), int(no_of_participants)):
         data = {
             "name": str(name).replace('\xa0',''),
@@ -103,13 +105,26 @@ def add_participants(meeting_code, meeting_password, no_of_participants):
             "role": ROLE
         }
         comb = _combine_to_string(data)
-        print(start_new_thread(get_browser, ("http://127.0.0.1:9999/meeting.html?"+comb, meeting_code,)))
+        url_link_list.append(f"{MEETING_URL}?{comb}")
+
+    urls_string = ",".join(url_link_list)
+    process = subprocess.Popen(["python", "sele_the.py", "--urls", urls_string])
+    if meeting_code in STORE_BROWSER_DICT:
+        brow = STORE_BROWSER_DICT[meeting_code]
+        STORE_BROWSER_DICT[meeting_code] = brow +[process]
+    else:
+        STORE_BROWSER_DICT[meeting_code] = [process]
 
 def remove_meeting(meeting_code):
     if meeting_code in STORE_BROWSER_DICT:
         for meeting_browser in STORE_BROWSER_DICT[meeting_code]:
             try:
-                meeting_browser.close()
+                if meeting_browser.poll() is not None:
+                    print("Subprocess terminated gracefully with return code:", meeting_browser.returncode)
+                else:
+                    # If the subprocess did not terminate gracefully, force kill it
+                    meeting_browser.kill()
+                    print("Subprocess forcefully killed")
             except Exception as ex:
                 print(ex)
         if meeting_code in STORE_BROWSER_DICT:del STORE_BROWSER_DICT[meeting_code]

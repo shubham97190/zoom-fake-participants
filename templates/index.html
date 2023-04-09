@@ -36,13 +36,13 @@
                                 <div class="col-md-12 form-group mb-3">
                                     <label for="" class="col-form-label">Meeting Code*</label>
                                     <input type="text" class="form-control" name="meeting_code" id="meeting_code"
-                                        placeholder="Meeting Code" required value={{meeting_code}}>
+                                        placeholder="Meeting Code" required value={{data.meeting_code}}>
                                 </div>
                                 <div class="col-md-12 form-group mb-3">
                                     <label for="" class="col-form-label">Meeting Password*</label>
                                     <input type="text" class="form-control" name="meeting_password"
                                         id="meeting_password" placeholder="passcode" required
-                                        value={{meeting_password}}>
+                                        value={{data.meeting_password}}>
                                 </div>
                             </div>
 
@@ -51,7 +51,7 @@
                                     <label for="budget" class="col-form-label">Number of Participants*</label>
                                     <input type="number" class="form-control" name="no_of_participants"
                                         id="no_of_participants" placeholder="Number of Participants" min="0" required
-                                        value={{no_of_participants}}>
+                                        value={{data.no_of_participants}}>
                                 </div>
                             </div>
 
@@ -76,8 +76,15 @@
                             </tr>
                         </thead>
                         <tbody>
-
-                        </tbody>
+                            {% for object in  store_objects %}
+                                <tr>
+                                    <td></td>
+                                    <td class="align-middle">{{ object.meeting_code }}</td>
+                                    <td class="align-middle">{{ object.no_of_participants }}</td>
+                                    <td><button type="button" class="btn btn-danger" onClick="removeRow();" id="{{ object.meeting_code }}">End Meeting</button></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody> 
                     </table>
                 </div>
             </div>
@@ -102,7 +109,7 @@
                     },
                 })
                 .then(function (response) {
-                    
+                    location.reload();s
                 })
                 .catch((error) => {
                     console.error(error)
@@ -126,13 +133,9 @@
                         },
                     })
                     .then(function (response) {
-                        table.append(
-                            '<tr> <td></td>' +
-                            '<td class="align-middle">' + formData.get("meeting_code") + '</td>' +
-                            '<td class="align-middle">' + formData.get("no_of_participants") + '</td>' +
-                            '<td><button type="button" class="btn btn-danger" onClick="removeRow();" id=' + formData.get("meeting_code") + '>End Meeting</button></td>' +
-                            '</tr>'
-                        );
+                        $("html").html($("html", response).html())
+                        location.reload();
+                        
                     })
                     .catch((error) => {
                         console.error(error)
