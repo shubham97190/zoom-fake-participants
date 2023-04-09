@@ -3,9 +3,10 @@ import jwt
 import time
 import datetime
 import random
+import subprocess
+from sys import platform
 from _thread import start_new_thread
 import pandas as pd
-import subprocess
 from selenium import webdriver
 from selenium.webdriver.chromium.options import ChromiumOptions
 from selenium.webdriver.chromium.service import ChromiumService
@@ -108,7 +109,8 @@ def add_participants(meeting_code, meeting_password, no_of_participants):
         url_link_list.append(f"{MEETING_URL}?{comb}")
 
     urls_string = ",".join(url_link_list)
-    process = subprocess.Popen(["python", "sele_the.py", "--urls", urls_string])
+    python_alb = "python3" if platform == "linux" or platform == "linux2" else 'python'
+    process = subprocess.Popen([python_alb, "sele_the.py", "--urls", urls_string])
     if meeting_code in STORE_BROWSER_DICT:
         brow = STORE_BROWSER_DICT[meeting_code]
         STORE_BROWSER_DICT[meeting_code] = brow +[process]
