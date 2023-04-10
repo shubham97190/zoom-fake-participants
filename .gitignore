@@ -54,3 +54,4 @@ static/admin/*
 chromedriver.exe
 geckodriver.exe
 geckodriver.log
+db.sqlite3
