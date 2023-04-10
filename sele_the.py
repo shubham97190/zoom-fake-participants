@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 import threading
 import argparse
+import pandas as pd
 
 
 def create_driver():
@@ -81,8 +82,10 @@ def run_nget_times():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Example script to accept a list of URLs")
-    parser.add_argument("--urls", type=str, nargs='+', help="List of URLs separated by spaces")
+    parser.add_argument("--urls", type=str, help="List of URLs separated by spaces")
     args = parser.parse_args()
     urls = args.urls
-    th_time = main_threads(urls[0].split(','))
+    dfs = pd.read_csv(urls)
+    url_list = dfs["urls"].tolist()
+    th_time = main_threads(url_list)
     print("multithreads {:0} seconds ---".format(th_time))

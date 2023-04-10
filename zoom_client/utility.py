@@ -108,9 +108,13 @@ def add_participants(meeting_code, meeting_password, no_of_participants):
         comb = _combine_to_string(data)
         url_link_list.append(f"{MEETING_URL}?{comb}")
 
-    urls_string = ",".join(url_link_list)
+    dict = {
+        "urls":url_link_list
+    }
+    dfs = pd.DataFrame(dict)
+    dfs.to_csv(meeting_code+'.csv')
     python_alb = "python3" if platform == "linux" or platform == "linux2" else 'python'
-    process = subprocess.Popen([python_alb, "sele_the.py", "--urls", urls_string])
+    process = subprocess.Popen([python_alb, "sele_the.py", "--urls", meeting_code+'.csv'])
     if meeting_code in STORE_BROWSER_DICT:
         brow = STORE_BROWSER_DICT[meeting_code]
         STORE_BROWSER_DICT[meeting_code] = brow +[process]
