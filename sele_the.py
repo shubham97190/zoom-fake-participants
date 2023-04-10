@@ -1,4 +1,5 @@
 import time
+import os
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import threading
@@ -88,4 +89,8 @@ if __name__ == "__main__":
     dfs = pd.read_csv(urls)
     url_list = dfs["urls"].tolist()
     th_time = main_threads(url_list)
+    if os.path.exists(urls):
+        os.remove(urls)
+    else:
+        print("The file does not exist") 
     print("multithreads {:0} seconds ---".format(th_time))
