@@ -42,7 +42,7 @@ def get_title(url, webdriver=None):
     if driver is None uses a new chrome-driver and quit() after
     otherwise uses the driver provided and don't quit() after
     """
-
+    print(url)
     def print_title(driver):
         driver.get(url)
         # [ try_click_random_link(driver) for i in range(8) ] # try to click-walk through 8 pages on random found links

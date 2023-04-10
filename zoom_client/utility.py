@@ -70,7 +70,7 @@ def generate_sdk_signature(meeting_number):
         algorithm='HS256'
     )
     # print(signature)
-    return signature
+    return signature.decode('utf-8')
 
 
 def _combine_to_string(data: dict) -> str:
